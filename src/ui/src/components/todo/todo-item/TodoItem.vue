@@ -30,6 +30,7 @@
         v-model="props.item.text"
         :title="props.item.text"
         @click="!isEdit && toggleEdit()"
+        @touchstart="!isEdit && toggleEdit()"
         @blur="isEdit && toggleEdit()"
         @keypress="(event) => onKeyPressed(event)"
       />
