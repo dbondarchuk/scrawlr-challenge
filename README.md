@@ -78,6 +78,10 @@ UI tests could be found alongside their respective components/services and are r
 
 API tests could be found in folder [tests](src/api/tests/) and a run using `phpunit`
 
+## UI
+
+UI is build using Bootstrap to be responsive and works pretty good on the mobile device.
+
 ---------
 
 # Scrawlr Hiring | Full Stack Technical Assessment
