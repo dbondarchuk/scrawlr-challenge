@@ -82,6 +82,14 @@ API tests could be found in folder [tests](src/api/tests/) and a run using `phpu
 
 UI is build using Bootstrap to be responsive and works pretty good on the mobile device.
 
+### Running UI locally & in Docker
+
+Make sure to run `yarn` or `npm install` when switching between running UI locally and in Docker container.
+
+As current `docker compose` uses original files as volume, `esbuild` package needed to be downloaded for specific platform (i.e. if your machine is Mac or Win). 
+
+Possible solution is to set `yarn` to version `berry` with the following command `yarn set version berry` and adding your platform into `.yarnrc.yml` file. This will also require tweaking Docker for `ui` container (i.e. creating `start.sh` file with `set version` command followed by `yarn run dev` and using this file as the command in `docker-compose.yml` file).
+
 ---------
 
 # Scrawlr Hiring | Full Stack Technical Assessment
