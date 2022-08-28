@@ -1,0 +1,111 @@
+version: "3.8"
+volumes:
+  db-postgres:
+  # redis:
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: ${APP_NAME:-scrawlr-hiring}_nginx
+    restart: unless-stopped
+    ports:
+      - ${API_PORT:-8281}:80
+    volumes:
+      - ./src/api:/var/www
+      - .docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - scrawlr_hiring_internal
+      - scrawlr_hiring_external
+    
+  api:
+    build:
+      args:
+        user: www
+        uid: ${APP_USER_ID:-1000}
+      context: ./src/api
+      dockerfile: ../../.docker/php/Dockerfile
+    container_name: ${APP_NAME:-scrawlr-hiring}_api
+    restart: unless-stopped
+    depends_on:
+      - database
+    working_dir: /var/www/
+    volumes:
+      - ./src/api:/var/www
+      - .docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+      - .docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+      - .docker/php/error_reporting.ini:/usr/local/etc/php/conf.d/error_reporting.ini
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - scrawlr_hiring_internal
+    environment:
+      - PHP_IDE_CONFIG="serverName=scrawlr-hiring"
+      - DB_CONNECTION=pgsql
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-scrawlr_hiring_db}
+      - DB_USERNAME=${DB_USERNAME:-scrawlr_hiring_db_user}
+      - DB_PASSWORD=${DB_PASSWORD:-scrawlr_hiring_db_password}
+
+  ui:
+    image: node:latest
+    container_name: ${APP_NAME:-scrawlr-hiring}_ui
+    entrypoint: /var/www/entrypoint.sh
+    command: yarn run dev
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - ${UI_PORT:-8280}:80
+    working_dir: /var/www/
+    volumes:
+      - ./src/ui:/var/www
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - scrawlr_hiring_internal
+    environment:
+      - API_URL=nginx:80
+
+  database:
+    image: postgres:14
+    container_name: ${APP_NAME:-scrawlr-hiring}_db
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
+      - ${DB_PORT:-5432}:5432
+    networks:
+      - scrawlr_hiring_external
+      - scrawlr_hiring_internal
+    volumes:
+      - db-postgres:/var/lib/postgres
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-scrawlr_hiring_db_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-scrawlr_hiring_db_password}
+      POSTGRES_DB: ${DB_DATABASE:-scrawlr_hiring_db}
+
+  # Feel free to enable redis if you want it 
+  # redis:
+  #   container_name: ${APP_NAME:-scrawlr-hiring}_redis
+  #   build:
+  #     context: .
+  #     dockerfile: .docker/redis/Dockerfile
+  #   deploy:
+  #     restart_policy:
+  #       condition: on-failure
+
+  #     resources:
+  #       limits:
+  #         memory: ${DOCKER_REDIS_MEM_LIMIT:-2G}
+  #   ports:
+  #     - ${REDIS_PORT:-6379}:6379
+  #   networks:
+  #     - scrawlr_hiring_internal
+  #   volumes:
+  #     - redis:/var/lib/redis
+
+networks:
+  scrawlr_hiring_external:
+    driver: bridge
+  scrawlr_hiring_internal:

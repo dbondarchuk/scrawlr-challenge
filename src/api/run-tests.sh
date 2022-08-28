@@ -1,0 +1,1 @@
+APP_ENV=testing DB_CONNECTION=testing ./vendor/bin/phpunit "$@"

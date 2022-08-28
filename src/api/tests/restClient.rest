@@ -1,0 +1,26 @@
+# This file can be used with VSCode extension humao.rest-client
+# After login you will need to update all `api_token`
+
+### Login
+POST http://localhost:8281/user/login HTTP/1.1
+content-type: application/json
+
+{"username": "test", "password":"test"}
+
+### Me
+POST http://localhost:8281/user/me HTTP/1.1
+content-type: application/json
+
+{"api_token": "svfYhaKscvwZuTE3TQEo"}
+
+### Logout
+POST http://localhost:8281/user/logout HTTP/1.1
+content-type: application/json
+
+{"api_token": "svfYhaKscvwZuTE3TQEo"}
+
+### Signup
+POST http://localhost:8281/user/signup HTTP/1.1
+content-type: application/json
+
+{"username": "test2", "password":"test2", "confirm_password": "test2"}
