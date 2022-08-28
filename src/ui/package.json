@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "test": "vitest",
-    "build": "vite build",
-    "preview": "vite preview",
-    "format": "prettier --write ."
+    "dev": "yarn vite",
+    "test": "yarn vitest",
+    "build": "yarn vite build",
+    "preview": "yarn vite preview",
+    "format": "yarn prettier --write ."
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.2",
